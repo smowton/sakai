@@ -66,8 +66,8 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
-import org.apache.tools.zip.ZipEntry;
-import org.apache.tools.zip.ZipFile;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import org.sakaiproject.announcement.api.AnnouncementChannel;
 import org.sakaiproject.announcement.api.AnnouncementMessage;
 import org.sakaiproject.announcement.api.AnnouncementMessageEdit;
@@ -15901,19 +15901,11 @@ public class AssignmentAction extends PagedResourceActionII
 		
 		try
 		{
-			tempFile = File.createTempFile(String.valueOf(System.currentTimeMillis()),"");
-			
-			tmpFileOut = new FileOutputStream(tempFile);
-			writeToStream(fileContentStream, tmpFileOut);
-			tmpFileOut.flush();
-			tmpFileOut.close();
+		    ZipInputStream zis = new ZipInputStream(fileContentStream);
 
-			ZipFile zipFile = new ZipFile(tempFile, "UTF-8");
-			Enumeration<ZipEntry> zipEntries = zipFile.getEntries();
-			ZipEntry entry;
-			while (zipEntries.hasMoreElements() && validZipFormat)
-			{
-				entry = zipEntries.nextElement();
+		    ZipEntry entry;
+		    while ((entry = zis.getNextEntry()) != null && validZipFormat) {
+
 				String entryName = entry.getName();
 				if (!entry.isDirectory() && entryName.indexOf("/.") == -1)
 				{
@@ -15928,7 +15920,7 @@ public class AssignmentAction extends PagedResourceActionII
 						zipHasGradeFile = true;
 						
 							// read grades.cvs from zip
-							CSVReader reader = new CSVReader(new InputStreamReader(zipFile.getInputStream(entry)));
+							CSVReader reader = new CSVReader(new InputStreamReader(zis));
 
 							List <String[]> lines = reader.readAll();
 
@@ -16001,7 +15993,7 @@ public class AssignmentAction extends PagedResourceActionII
 							zipHasGradeFile = true;
 
 							// read grades.xls from zip
-							POIFSFileSystem fsFileSystem = new POIFSFileSystem(zipFile.getInputStream(entry));
+							POIFSFileSystem fsFileSystem = new POIFSFileSystem(zis);
 							HSSFWorkbook workBook = new HSSFWorkbook(fsFileSystem);
 							HSSFSheet hssfSheet = workBook.getSheetAt(0);
 							//Iterate the rows
@@ -16121,7 +16113,7 @@ public class AssignmentAction extends PagedResourceActionII
 								if (hasComment && entryName.indexOf("comments") != -1)
 								{
 									// read the comments file
-									String comment = getBodyTextFromZipHtml(zipFile.getInputStream(entry),true);
+									String comment = getBodyTextFromZipHtml(zis,true);
 									if (comment != null)
 									{
 										UploadGradeWrapper r = (UploadGradeWrapper) submissionTable.get(userEid);
@@ -16132,7 +16124,7 @@ public class AssignmentAction extends PagedResourceActionII
 								if (hasFeedbackText && entryName.indexOf("feedbackText") != -1)
 								{
 									// upload the feedback text
-									String text = getBodyTextFromZipHtml(zipFile.getInputStream(entry),false);
+									String text = getBodyTextFromZipHtml(zis,false);
 									if (text != null)
 									{
 										UploadGradeWrapper r = (UploadGradeWrapper) submissionTable.get(userEid);
@@ -16143,7 +16135,7 @@ public class AssignmentAction extends PagedResourceActionII
 								if (hasSubmissionText && entryName.indexOf("_submissionText") != -1)
 								{
 									// upload the student submission text
-									String text = getBodyTextFromZipHtml(zipFile.getInputStream(entry),false);
+									String text = getBodyTextFromZipHtml(zis,false);
 									if (text != null)
 									{
 										UploadGradeWrapper r = (UploadGradeWrapper) submissionTable.get(userEid);
@@ -16160,7 +16152,7 @@ public class AssignmentAction extends PagedResourceActionII
 										// clear the submission attachment first
 										UploadGradeWrapper r = (UploadGradeWrapper) submissionTable.get(userEid);
 										submissionTable.put(userEid, r);
-										submissionTable = uploadZipAttachments(state, submissionTable, zipFile.getInputStream(entry), entry, entryName, userEid, "submission");
+										submissionTable = uploadZipAttachments(state, submissionTable, zis, entry, entryName, userEid, "submission");
 									}
 								}
 								if (hasFeedbackAttachment)
@@ -16172,14 +16164,14 @@ public class AssignmentAction extends PagedResourceActionII
 										// clear the feedback attachment first
 										UploadGradeWrapper r = (UploadGradeWrapper) submissionTable.get(userEid);
 										submissionTable.put(userEid, r);
-										submissionTable = uploadZipAttachments(state, submissionTable, zipFile.getInputStream(entry), entry, entryName, userEid, "feedback");
+										submissionTable = uploadZipAttachments(state, submissionTable, zis, entry, entryName, userEid, "feedback");
 									}
 								}
 								
 								// if this is a timestamp file
 								if (entryName.indexOf("timestamp") != -1)
 								{
-									byte[] timeStamp = readIntoBytes(zipFile.getInputStream(entry), entryName, entry.getSize());
+									byte[] timeStamp = readIntoBytes(zis, entryName, entry.getSize());
 									UploadGradeWrapper r = (UploadGradeWrapper) submissionTable.get(userEid);
 									r.setSubmissionTimestamp(new String(timeStamp));
 									submissionTable.put(userEid, r);
