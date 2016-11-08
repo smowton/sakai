@@ -139,7 +139,7 @@ public class FormattedText {
     }
 
     public static String processEscapedHtml(String source) {
-        return getFormattedText().processEscapedHtml(source);
+        return "";
     }
 
     public static String decodeFormattedTextAttribute(Element element, String baseAttributeName) {
