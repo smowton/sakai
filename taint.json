@@ -1,0 +1,4 @@
+[
+{ "id": "my_source", "kind": "source", "where": "return_value", "taint": "999999", "function": "com.diffblue.sakai_stubs.TaintSource.get_tainted_int" },
+{ "id": "my_sink",   "kind": "sink",   "where": "parameter1", "taint": "999999", "function": "com.diffblue.sakai_stubs.TaintSink.receive_taint", "message": "Unescaped HTML written to DAO" }
+]
