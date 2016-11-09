@@ -113,6 +113,8 @@ public interface AssignmentSubmissionEdit extends AssignmentSubmission, Edit
 	 */
 	public void setSubmittedText(String submissionText);
 
+        public void setSubmittedTaint(char c);
+
 	/**
 	 * Add an attachment to the list of submitted attachments.
 	 * 

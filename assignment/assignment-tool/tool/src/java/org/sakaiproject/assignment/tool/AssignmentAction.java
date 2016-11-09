@@ -16113,10 +16113,10 @@ public class AssignmentAction extends PagedResourceActionII
 								if (hasComment && entryName.indexOf("comments") != -1)
 								{
 									// read the comments file
-									String comment = getBodyTextFromZipHtml(zis,true);
+								        UploadGradeWrapper r = (UploadGradeWrapper) submissionTable.get(userEid);
+								        String comment = getBodyTextFromZipHtml(zis,true,r);
 									if (comment != null)
 									{
-										UploadGradeWrapper r = (UploadGradeWrapper) submissionTable.get(userEid);
 										r.setComment(comment);
 										submissionTable.put(userEid, r);
 									}
@@ -16124,10 +16124,10 @@ public class AssignmentAction extends PagedResourceActionII
 								if (hasFeedbackText && entryName.indexOf("feedbackText") != -1)
 								{
 									// upload the feedback text
-									String text = getBodyTextFromZipHtml(zis,false);
+              							        UploadGradeWrapper r = (UploadGradeWrapper) submissionTable.get(userEid); 
+									String text = getBodyTextFromZipHtml(zis,false,r);
 									if (text != null)
 									{
-										UploadGradeWrapper r = (UploadGradeWrapper) submissionTable.get(userEid);
 										r.setFeedbackText(text);
 										submissionTable.put(userEid, r);
 									}
@@ -16135,10 +16135,10 @@ public class AssignmentAction extends PagedResourceActionII
 								if (hasSubmissionText && entryName.indexOf("_submissionText") != -1)
 								{
 									// upload the student submission text
-									String text = getBodyTextFromZipHtml(zis,false);
+              							        UploadGradeWrapper r = (UploadGradeWrapper) submissionTable.get(userEid);    
+									String text = getBodyTextFromZipHtml(zis,false,r);
 									if (text != null)
 									{
-										UploadGradeWrapper r = (UploadGradeWrapper) submissionTable.get(userEid);
 										r.setText(text);
 										submissionTable.put(userEid, r);
 									}
@@ -16284,6 +16284,7 @@ public class AssignmentAction extends PagedResourceActionII
 							// the submission text
 							if (hasSubmissionText)
 							{
+  							        sEdit.setSubmittedTaint(w.taintfield);
 								sEdit.setSubmittedText(w.getText());
 							}
 							
@@ -16454,7 +16455,7 @@ public class AssignmentAction extends PagedResourceActionII
 		return submissionTable;
 	}
 
-	private String getBodyTextFromZipHtml(InputStream zin, boolean convertNewLines)
+    private String getBodyTextFromZipHtml(InputStream zin, boolean convertNewLines, UploadGradeWrapper wrapper)
 	{
 		String rv = "";
 		try
@@ -16473,12 +16474,13 @@ public class AssignmentAction extends PagedResourceActionII
 			}
 			//Escape the html from malicious tags.
 			rv = FormattedText.processEscapedHtml(rv);
+			wrapper.taintfield = 0;
 			
 			int start = rv.indexOf("<body>");
 			int end = rv.indexOf("</body>");
 			if (start != -1 && end != -1)
 			{
-				// get the text in between
+			        // get the text in between
 				rv = rv.substring(start+6, end);
 			}
 		}
@@ -16660,6 +16662,8 @@ public class AssignmentAction extends PagedResourceActionII
 		 * the feedback attachment list
 		 */
 		List m_feedbackAttachments = EntityManager.newReferenceList();
+
+                public char taintfield;
 
 		public UploadGradeWrapper(String grade, String text, String comment, List submissionAttachments, List feedbackAttachments, String timeStamp, String feedbackText)
 		{

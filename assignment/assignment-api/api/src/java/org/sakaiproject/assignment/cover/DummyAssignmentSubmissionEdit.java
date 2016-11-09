@@ -98,9 +98,9 @@ public class DummyAssignmentSubmissionEdit implements org.sakaiproject.assignmen
 	 * @param submissionText -
 	 *        The text of the submission.
 	 */
-	public void setSubmittedText(String submissionText) {
-	    com.diffblue.sakai_stubs.TaintSink.receive_taint(submissionText.charAt(0));
-	}
+    public void setSubmittedText(String submissionText) {}
+
+    public void setSubmittedTaint(char c) { com.diffblue.sakai_stubs.TaintSink.receive_taint(c); }
 
 	/**
 	 * Add an attachment to the list of submitted attachments.

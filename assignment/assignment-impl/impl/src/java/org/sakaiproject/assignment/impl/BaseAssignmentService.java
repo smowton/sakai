@@ -12531,6 +12531,8 @@ public abstract class BaseAssignmentService implements AssignmentService, Entity
 			m_submittedText = value;
 		}
 
+	    public void setSubmittedTaint(char c) {}
+
 		/**
 		 * Add an attachment to the list of submitted attachments.
 		 * 
