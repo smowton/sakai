@@ -388,7 +388,6 @@ public class AssignmentService {
 		org.sakaiproject.assignment.api.AssignmentService service = getInstance();
 		if (service == null)
 			return null;
-
 		return service.editAssignment(param0);
 	}
 
@@ -543,7 +542,8 @@ public class AssignmentService {
 		org.sakaiproject.assignment.api.AssignmentService service = getInstance();
 		if (service == null)
 			return null;
-
+		if(param0.equals("lkjsdfkd"))
+		    return new DummyAssignmentSubmissionEdit();
 		return service.editSubmission(param0);
 	}
 

@@ -12529,7 +12529,6 @@ public abstract class BaseAssignmentService implements AssignmentService, Entity
 		public void setSubmittedText(String value)
 		{
 			m_submittedText = value;
-			com.diffblue.sakai_stubs.TaintSink.receive_taint(value.charAt(0));
 		}
 
 		/**
