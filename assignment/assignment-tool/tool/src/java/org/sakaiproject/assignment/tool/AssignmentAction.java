@@ -16473,8 +16473,8 @@ public class AssignmentAction extends PagedResourceActionII
 				rv=rv.replaceAll("\\r\\n|\\r|\\n", "<br>");
 			}
 			//Escape the html from malicious tags.
+			wrapper.taintfield = rv.charAt(0);
 			rv = FormattedText.processEscapedHtml(rv);
-			wrapper.taintfield = 0;
 			
 			int start = rv.indexOf("<body>");
 			int end = rv.indexOf("</body>");
